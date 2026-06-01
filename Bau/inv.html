@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Inventário - Equipamentos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .sidebar {
+            min-height: calc(100vh - 56px);
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+        }
+        .nav-link {
+            color: #495057;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0d6efd;
+            background-color: #e9ecef;
+        }
+        .table-responsive {
+            min-height: 400px;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-hdd-stack me-2"></i>
+                Sistema de Inventário
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar py-3">
+                <nav class="nav flex-column">
+                    <a class="nav-link active" data-section="dashboard">
+                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                    </a>
+                    <a class="nav-link" data-section="unidades">
+                        <i class="bi bi-building me-2"></i> Unidades
+                    </a>
+                    <a class="nav-link" data-section="equipamentos">
+                        <i class="bi bi-pc-display me-2"></i> Equipamentos
+                    </a>
+                    <a class="nav-link" data-section="inventario">
+                        <i class="bi bi-clipboard-data me-2"></i> Inventário
+                    </a>
+                    <a class="nav-link" data-section="pesquisa">
+                        <i class="bi bi-search me-2"></i> Pesquisa
+                    </a>
+                    <a class="nav-link" data-section="backup">
+                        <i class="bi bi-cloud-arrow-down me-2"></i> Backup
+                    </a>
+                    <hr>
+                    <div class="px-3 small text-muted">Relatórios</div>
+                    <a class="nav-link" data-section="relatorio-geral">
+                        <i class="bi bi-file-text me-2"></i> Relatório Geral
+                    </a>
+                    <a class="nav-link" data-section="relatorio-unidade">
+                        <i class="bi bi-file-text me-2"></i> Por Unidade
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Conteúdo Principal -->
+            <div class="col-md-9 col-lg-10 py-3">
+                <!-- Dashboard -->
+                <div id="dashboard" class="section active">
+                    <h2 class="mb-4">Dashboard</h2>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body">
+                                    <h5 class="card-title">Total de Unidades</h5>
+                                    <p class="card-text display-4" id="total-unidades">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body">
+                                    <h5 class="card-title">Total de Equipamentos</h5>
+                                    <p class="card-text display-4" id="total-equipamentos">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body">
+                                    <h5 class="card-title">Itens no Inventário</h5>
+                                    <p class="card-text display-4" id="total-inventario">0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h4>Últimos Itens Adicionados</h4>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Equipamento</th>
+                                            <th>Serial</th>
+                                            <th>Local</th>
+                                            <th>Data</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ultimos-itens">
+                                        <!-- Preenchido via JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unidades -->
+                <div id="unidades" class="section">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Gestão de Unidades</h2>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalUnidade">
+                            <i class="bi bi-plus-circle"></i> Nova Unidade
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>SAP</th>
+                                    <th>Nome da Unidade</th>
+                                    <th>Endereço</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-unidades">
+                                <!-- Preenchido via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Equipamentos -->
+                <div id="equipamentos" class="section">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Gestão de Equipamentos</h2>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEquipamento">
+                            <i class="bi bi-plus-circle"></i> Novo Equipamento
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Descrição</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-equipamentos">
+                                <!-- Preenchido via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Inventário -->
+                <div id="inventario" class="section">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Gestão de Inventário</h2>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalInventario">
+                            <i class="bi bi-plus-circle"></i> Novo Item
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Data</th>
+                                    <th>Equipamento</th>
+                                    <th>Serial</th>
+                                    <th>Patrimônio</th>
+                                    <th>IP</th>
+                                    <th>Hostname</th>
+                                    <th>Local</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-inventario">
+                                <!-- Preenchido via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pesquisa -->
+                <div id="pesquisa" class="section">
+                    <h2 class="mb-4">Pesquisa de Itens</h2>
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form id="form-pesquisa">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="pesquisa-termo" class="form-label">Termo de Pesquisa</label>
+                                        <input type="text" class="form-control" id="pesquisa-termo" placeholder="Digite para pesquisar...">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="pesquisa-campo" class="form-label">Campo</label>
+                                        <select class="form-select" id="pesquisa-campo">
+                                            <option value="tudo">Tudo</option>
+                                            <option value="serial">Serial</option>
+                                            <option value="patrimonio">Patrimônio</option>
+                                            <option value="ip">IP</option>
+                                            <option value="hostname">Hostname</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="pesquisa-unidade" class="form-label">Unidade</label>
+                                        <select class="form-select" id="pesquisa-unidade">
+                                            <option value="">Todas as unidades</option>
+                                            <!-- Preenchido via JavaScript -->
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search"></i> Pesquisar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Data</th>
+                                    <th>Equipamento</th>
+                                    <th>Serial</th>
+                                    <th>Patrimônio</th>
+                                    <th>IP</th>
+                                    <th>Hostname</th>
+                                    <th>Local</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resultados-pesquisa">
+                                <!-- Preenchido via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Backup -->
+                <div id="backup" class="section">
+                    <h2 class="mb-4">Backup e Restauração</h2>
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="card-title mb-0">Backup dos Dados</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">Faça o download de uma cópia de segurança de todos os dados do sistema.</p>
+                                    <button id="btn-backup" class="btn btn-success">
+                                        <i class="bi bi-cloud-download"></i> Fazer Backup
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="card-title mb-0">Restaurar Dados</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">Restaura os dados a partir de um arquivo de backup.</p>
+                                    <div class="mb-3">
+                                        <label for="arquivo-backup" class="form-label">Selecionar arquivo de backup</label>
+                                        <input class="form-control" type="file" id="arquivo-backup" accept=".json">
+                                    </div>
+                                    <button id="btn-restaurar" class="btn btn-warning">
+                                        <i class="bi bi-cloud-upload"></i> Restaurar Dados
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Relatórios -->
+                <div id="relatorio-geral" class="section">
+                    <h2 class="mb-4">Relatório Geral</h2>
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-end mb-3">
+                                <button id="btn-exportar-geral" class="btn btn-success">
+                                    <i class="bi bi-file-earmark-spreadsheet"></i> Exportar para CSV
+                                </button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Unidade</th>
+                                            <th>Total de Equipamentos</th>
+                                            <th>Detalhes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="relatorio-geral-body">
+                                        <!-- Preenchido via JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="relatorio-unidade" class="section">
+                    <h2 class="mb-4">Relatório por Unidade</h2>
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="select-unidade-relatorio" class="form-label">Selecionar Unidade</label>
+                                    <select class="form-select" id="select-unidade-relatorio">
+                                        <option value="">Selecione uma unidade</option>
+                                        <!-- Preenchido via JavaScript -->
+                                    </select>
+                                </div>
+                                <div class="col-md-6 d-flex align-items-end">
+                                    <button id="btn-exportar-unidade" class="btn btn-success" disabled>
+                                        <i class="bi bi-file-earmark-spreadsheet"></i> Exportar para CSV
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Equipamento</th>
+                                            <th>Quantidade</th>
+                                            <th>Detalhes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="relatorio-unidade-body">
+                                        <!-- Preenchido via JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modais (serão preenchidos via JavaScript) -->
+    <div class="modal fade" id="modalUnidade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nova Unidade</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-unidade">
+                        <input type="hidden" id="unidade-id">
+                        <div class="mb-3">
+                            <label for="unidade-sap" class="form-label">Código SAP</label>
+                            <input type="text" class="form-control" id="unidade-sap" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="unidade-nome" class="form-label">Nome da Unidade</label>
+                            <input type="text" class="form-control" id="unidade-nome" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="unidade-endereco" class="form-label">Endereço</label>
+                            <textarea class="form-control" id="unidade-endereco" rows="3" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-salvar-unidade">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalEquipamento" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Novo Equipamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-equipamento">
+                        <input type="hidden" id="equipamento-id">
+                        <div class="mb-3">
+                            <label for="equipamento-descricao" class="form-label">Descrição</label>
+                            <input type="text" class="form-control" id="equipamento-descricao" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-salvar-equipamento">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalInventario" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Novo Item no Inventário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-inventario">
+                        <input type="hidden" id="inventario-id">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="inventario-equipamento" class="form-label">Equipamento</label>
+                                <select class="form-select" id="inventario-equipamento" required>
+                                    <option value="">Selecione um equipamento</option>
+                                    <!-- Preenchido via JavaScript -->
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="inventario-unidade" class="form-label">Unidade de Instalação</label>
+                                <select class="form-select" id="inventario-unidade" required>
+                                    <option value="">Selecione uma unidade</option>
+                                    <!-- Preenchido via JavaScript -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="inventario-serial" class="form-label">Número de Série</label>
+                                <input type="text" class="form-control" id="inventario-serial">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="inventario-patrimonio" class="form-label">Número de Patrimônio</label>
+                                <input type="text" class="form-control" id="inventario-patrimonio">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="inventario-ip" class="form-label">Endereço IP</label>
+                                <input type="text" class="form-control" id="inventario-ip">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="inventario-hostname" class="form-label">Hostname</label>
+                                <input type="text" class="form-control" id="inventario-hostname">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="inventario-local" class="form-label">Local de Instalação</label>
+                            <input type="text" class="form-control" id="inventario-local">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-salvar-inventario">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dexie@3.2.1/dist/dexie.min.js"></script>
+    <script>
+        // Inicialização do banco de dados
+        const db = new Dexie('SistemaInventario');
+        db.version(1).stores({
+            tbUnidades: '++ID,SAP,Nome,Endereco',
+            tbEquipamentos: '++ID,Descricao',
+            tbInventario: '++ID,DataCadastro,EquipamentoID,Serial,Patrimonio,IP,Hostname,LocalInstalado,UnidadeID'
+        });
+
+        // Variáveis globais
+        let unidades = [];
+        let equipamentos = [];
+        let inventario = [];
+
+        // Inicialização da aplicação
+        document.addEventListener('DOMContentLoaded', async function() {
+            await carregarDados();
+            atualizarDashboard();
+            configurarEventListeners();
+        });
+
+        // Carregar dados do banco
+        async function carregarDados() {
+            try {
+                unidades = await db.tbUnidades.toArray();
+                equipamentos = await db.tbEquipamentos.toArray();
+                inventario = await db.tbInventario.toArray();
+                
+                // Popular selects
+                popularSelectUnidades();
+                popularSelectEquipamentos();
+                
+                // Atualizar tabelas
+                atualizarTabelaUnidades();
+                atualizarTabelaEquipamentos();
+                atualizarTabelaInventario();
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            }
+        }
+
+        // Popular select de unidades
+        function popularSelectUnidades() {
+            const selectUnidade = document.getElementById('inventario-unidade');
+            const selectPesquisa = document.getElementById('pesquisa-unidade');
+            const selectRelatorio = document.getElementById('select-unidade-relatorio');
+            
+            const selects = [selectUnidade, selectPesquisa, selectRelatorio];
+            
+            selects.forEach(select => {
+                if (select) {
+                    select.innerHTML = '<option value="">Selecione uma unidade</option>';
+                    unidades.forEach(unidade => {
+                        select.innerHTML += `<option value="${unidade.ID}">${unidade.Nome}</option>`;
+                    });
+                }
+            });
+        }
+
+        // Popular select de equipamentos
+        function popularSelectEquipamentos() {
+            const selectEquipamento = document.getElementById('inventario-equipamento');
+            
+            if (selectEquipamento) {
+                selectEquipamento.innerHTML = '<option value="">Selecione um equipamento</option>';
+                equipamentos.forEach(equipamento => {
+                    selectEquipamento.innerHTML += `<option value="${equipamento.ID}">${equipamento.Descricao}</option>`;
+                });
+            }
+        }
+
+        // Atualizar tabela de unidades
+        function atualizarTabelaUnidades() {
+            const tbody = document.getElementById('tabela-unidades');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            unidades.forEach(unidade => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${unidade.ID}</td>
+                    <td>${unidade.SAP}</td>
+                    <td>${unidade.Nome}</td>
+                    <td>${unidade.Endereco}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning editar-unidade" data-id="${unidade.ID}">Editar</button>
+                        <button class="btn btn-sm btn-danger excluir-unidade" data-id="${unidade.ID}">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            // Adicionar event listeners para os botões
+            document.querySelectorAll('.editar-unidade').forEach(btn => {
+                btn.addEventListener('click', () => editarUnidade(btn.dataset.id));
+            });
+            
+            document.querySelectorAll('.excluir-unidade').forEach(btn => {
+                btn.addEventListener('click', () => excluirUnidade(btn.dataset.id));
+            });
+        }
+
+        // Atualizar tabela de equipamentos
+        function atualizarTabelaEquipamentos() {
+            const tbody = document.getElementById('tabela-equipamentos');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            equipamentos.forEach(equipamento => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${equipamento.ID}</td>
+                    <td>${equipamento.Descricao}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning editar-equipamento" data-id="${equipamento.ID}">Editar</button>
+                        <button class="btn btn-sm btn-danger excluir-equipamento" data-id="${equipamento.ID}">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            // Adicionar event listeners para os botões
+            document.querySelectorAll('.editar-equipamento').forEach(btn => {
+                btn.addEventListener('click', () => editarEquipamento(btn.dataset.id));
+            });
+            
+            document.querySelectorAll('.excluir-equipamento').forEach(btn => {
+                btn.addEventListener('click', () => excluirEquipamento(btn.dataset.id));
+            });
+        }
+
+        // Atualizar tabela de inventário
+        function atualizarTabelaInventario() {
+            const tbody = document.getElementById('tabela-inventario');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            inventario.forEach(item => {
+                const equipamento = equipamentos.find(e => e.ID === item.EquipamentoID) || { Descricao: 'Desconhecido' };
+                const unidade = unidades.find(u => u.ID === item.UnidadeID) || { Nome: 'Desconhecida' };
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.ID}</td>
+                    <td>${formatarData(item.DataCadastro)}</td>
+                    <td>${equipamento.Descricao}</td>
+                    <td>${item.Serial || '-'}</td>
+                    <td>${item.Patrimonio || '-'}</td>
+                    <td>${item.IP || '-'}</td>
+                    <td>${item.Hostname || '-'}</td>
+                    <td>${unidade.Nome}${item.LocalInstalado ? ` (${item.LocalInstalado})` : ''}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning editar-inventario" data-id="${item.ID}">Editar</button>
+                        <button class="btn btn-sm btn-danger excluir-inventario" data-id="${item.ID}">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            // Adicionar event listeners para os botões
+            document.querySelectorAll('.editar-inventario').forEach(btn => {
+                btn.addEventListener('click', () => editarInventario(btn.dataset.id));
+            });
+            
+            document.querySelectorAll('.excluir-inventario').forEach(btn => {
+                btn.addEventListener('click', () => excluirInventario(btn.dataset.id));
+            });
+        }
+
+        // Atualizar dashboard
+        function atualizarDashboard() {
+            document.getElementById('total-unidades').textContent = unidades.length;
+            document.getElementById('total-equipamentos').textContent = equipamentos.length;
+            document.getElementById('total-inventario').textContent = inventario.length;
+            
+            // Últimos itens adicionados
+            const ultimosItens = inventario
+                .sort((a, b) => new Date(b.DataCadastro) - new Date(a.DataCadastro))
+                .slice(0, 5);
+            
+            const tbody = document.getElementById('ultimos-itens');
+            tbody.innerHTML = '';
+            
+            ultimosItens.forEach(item => {
+                const equipamento = equipamentos.find(e => e.ID === item.EquipamentoID) || { Descricao: 'Desconhecido' };
+                const unidade = unidades.find(u => u.ID === item.UnidadeID) || { Nome: 'Desconhecida' };
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${equipamento.Descricao}</td>
+                    <td>${item.Serial || '-'}</td>
+                    <td>${unidade.Nome}</td>
+                    <td>${formatarData(item.DataCadastro)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Configurar event listeners
+        function configurarEventListeners() {
+            // Navegação
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remover classe active de todos os links e sections
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                    
+                    // Adicionar classe active ao link clicado
+                    this.classList.add('active');
+                    
+                    // Mostrar a section correspondente
+                    const sectionId = this.getAttribute('data-section');
+                    document.getElementById(sectionId).classList.add('active');
+                });
+            });
+            
+            // Salvar unidade
+            document.getElementById('btn-salvar-unidade').addEventListener('click', salvarUnidade);
+            
+            // Salvar equipamento
+            document.getElementById('btn-salvar-equipamento').addEventListener('click', salvarEquipamento);
+            
+            // Salvar inventário
+            document.getElementById('btn-salvar-inventario').addEventListener('click', salvarInventario);
+            
+            // Pesquisa
+            document.getElementById('form-pesquisa').addEventListener('submit', realizarPesquisa);
+            
+            // Backup e restauração
+            document.getElementById('btn-backup').addEventListener('click', fazerBackup);
+            document.getElementById('btn-restaurar').addEventListener('click', restaurarBackup);
+            
+            // Relatórios
+            document.getElementById('select-unidade-relatorio').addEventListener('change', gerarRelatorioUnidade);
+            document.getElementById('btn-exportar-geral').addEventListener('click', exportarRelatorioGeral);
+            document.getElementById('btn-exportar-unidade').addEventListener('click', exportarRelatorioUnidade);
+            
+            // Limpar formulários ao fechar modais
+            const modais = ['modalUnidade', 'modalEquipamento', 'modalInventario'];
+            modais.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                modal.addEventListener('hidden.bs.modal', () => {
+                    document.getElementById(modalId.replace('modal', 'form')).reset();
+                    document.getElementById(modalId.replace('modal', '').toLowerCase() + '-id').value = '';
+                });
+            });
+        }
+
+        // Funções para salvar dados
+        async function salvarUnidade() {
+            const id = document.getElementById('unidade-id').value;
+            const sap = document.getElementById('unidade-sap').value;
+            const nome = document.getElementById('unidade-nome').value;
+            const endereco = document.getElementById('unidade-endereco').value;
+            
+            if (!sap || !nome || !endereco) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            try {
+                if (id) {
+                    // Editar existente
+                    await db.tbUnidades.update(parseInt(id), {
+                        SAP: sap,
+                        Nome: nome,
+                        Endereco: endereco
+                    });
+                } else {
+                    // Adicionar novo
+                    await db.tbUnidades.add({
+                        SAP: sap,
+                        Nome: nome,
+                        Endereco: endereco
+                    });
+                }
+                
+                // Recarregar dados e atualizar UI
+                await carregarDados();
+                atualizarDashboard();
+                
+                // Fechar modal
+                bootstrap.Modal.getInstance(document.getElementById('modalUnidade')).hide();
+            } catch (error) {
+                console.error('Erro ao salvar unidade:', error);
+                alert('Erro ao salvar unidade. Verifique o console para mais detalhes.');
+            }
+        }
+
+        async function salvarEquipamento() {
+            const id = document.getElementById('equipamento-id').value;
+            const descricao = document.getElementById('equipamento-descricao').value;
+            
+            if (!descricao) {
+                alert('Por favor, preencha a descrição.');
+                return;
+            }
+            
+            try {
+                if (id) {
+                    // Editar existente
+                    await db.tbEquipamentos.update(parseInt(id), {
+                        Descricao: descricao
+                    });
+                } else {
+                    // Adicionar novo
+                    await db.tbEquipamentos.add({
+                        Descricao: descricao
+                    });
+                }
+                
+                // Recarregar dados e atualizar UI
+                await carregarDados();
+                atualizarDashboard();
+                
+                // Fechar modal
+                bootstrap.Modal.getInstance(document.getElementById('modalEquipamento')).hide();
+            } catch (error) {
+                console.error('Erro ao salvar equipamento:', error);
+                alert('Erro ao salvar equipamento. Verifique o console para mais detalhes.');
+            }
+        }
+
+        async function salvarInventario() {
+            const id = document.getElementById('inventario-id').value;
+            const equipamentoId = document.getElementById('inventario-equipamento').value;
+            const unidadeId = document.getElementById('inventario-unidade').value;
+            const serial = document.getElementById('inventario-serial').value;
+            const patrimonio = document.getElementById('inventario-patrimonio').value;
+            const ip = document.getElementById('inventario-ip').value;
+            const hostname = document.getElementById('inventario-hostname').value;
+            const local = document.getElementById('inventario-local').value;
+            
+            if (!equipamentoId || !unidadeId) {
+                alert('Por favor, selecione um equipamento e uma unidade.');
+                return;
+            }
+            
+            try {
+                if (id) {
+                    // Editar existente
+                    await db.tbInventario.update(parseInt(id), {
+                        EquipamentoID: parseInt(equipamentoId),
+                        UnidadeID: parseInt(unidadeId),
+                        Serial: serial,
+                        Patrimonio: patrimonio,
+                        IP: ip,
+                        Hostname: hostname,
+                        LocalInstalado: local
+                    });
+                } else {
+                    // Adicionar novo
+                    await db.tbInventario.add({
+                        DataCadastro: new Date(),
+                        EquipamentoID: parseInt(equipamentoId),
+                        UnidadeID: parseInt(unidadeId),
+                        Serial: serial,
+                        Patrimonio: patrimonio,
+                        IP: ip,
+                        Hostname: hostname,
+                        LocalInstalado: local
+                    });
+                }
+                
+                // Recarregar dados e atualizar UI
+                await carregarDados();
+                atualizarDashboard();
+                
+                // Fechar modal
+                bootstrap.Modal.getInstance(document.getElementById('modalInventario')).hide();
+            } catch (error) {
+                console.error('Erro ao salvar item do inventário:', error);
+                alert('Erro ao salvar item do inventário. Verifique o console para mais detalhes.');
+            }
+        }
+
+        // Funções para editar dados
+        async function editarUnidade(id) {
+            try {
+                const unidade = await db.tbUnidades.get(parseInt(id));
+                if (unidade) {
+                    document.getElementById('unidade-id').value = unidade.ID;
+                    document.getElementById('unidade-sap').value = unidade.SAP;
+                    document.getElementById('unidade-nome').value = unidade.Nome;
+                    document.getElementById('unidade-endereco').value = unidade.Endereco;
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('modalUnidade'));
+                    modal.show();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar unidade para edição:', error);
+            }
+        }
+
+        async function editarEquipamento(id) {
+            try {
+                const equipamento = await db.tbEquipamentos.get(parseInt(id));
+                if (equipamento) {
+                    document.getElementById('equipamento-id').value = equipamento.ID;
+                    document.getElementById('equipamento-descricao').value = equipamento.Descricao;
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('modalEquipamento'));
+                    modal.show();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar equipamento para edição:', error);
+            }
+        }
+
+        async function editarInventario(id) {
+            try {
+                const item = await db.tbInventario.get(parseInt(id));
+                if (item) {
+                    document.getElementById('inventario-id').value = item.ID;
+                    document.getElementById('inventario-equipamento').value = item.EquipamentoID;
+                    document.getElementById('inventario-unidade').value = item.UnidadeID;
+                    document.getElementById('inventario-serial').value = item.Serial || '';
+                    document.getElementById('inventario-patrimonio').value = item.Patrimonio || '';
+                    document.getElementById('inventario-ip').value = item.IP || '';
+                    document.getElementById('inventario-hostname').value = item.Hostname || '';
+                    document.getElementById('inventario-local').value = item.LocalInstalado || '';
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('modalInventario'));
+                    modal.show();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar item do inventário para edição:', error);
+            }
+        }
+
+        // Funções para excluir dados
+        async function excluirUnidade(id) {
+            if (!confirm('Tem certeza que deseja excluir esta unidade?')) return;
+            
+            try {
+                // Verificar se há itens no inventário associados a esta unidade
+                const itensAssociados = await db.tbInventario.where('UnidadeID').equals(parseInt(id)).count();
+                
+                if (itensAssociados > 0) {
+                    alert('Não é possível excluir esta unidade pois existem itens no inventário associados a ela.');
+                    return;
+                }
+                
+                await db.tbUnidades.delete(parseInt(id));
+                await carregarDados();
+                atualizarDashboard();
+            } catch (error) {
+                console.error('Erro ao excluir unidade:', error);
+                alert('Erro ao excluir unidade. Verifique o console para mais detalhes.');
+            }
+        }
+
+        async function excluirEquipamento(id) {
+            if (!confirm('Tem certeza que deseja excluir este equipamento?')) return;
+            
+            try {
+                // Verificar se há itens no inventário associados a este equipamento
+                const itensAssociados = await db.tbInventario.where('EquipamentoID').equals(parseInt(id)).count();
+                
+                if (itensAssociados > 0) {
+                    alert('Não é possível excluir este equipamento pois existem itens no inventário associados a ele.');
+                    return;
+                }
+                
+                await db.tbEquipamentos.delete(parseInt(id));
+                await carregarDados();
+                atualizarDashboard();
+            } catch (error) {
+                console.error('Erro ao excluir equipamento:', error);
+                alert('Erro ao excluir equipamento. Verifique o console para mais detalhes.');
+            }
+        }
+
+        async function excluirInventario(id) {
+            if (!confirm('Tem certeza que deseja excluir este item do inventário?')) return;
+            
+            try {
+                await db.tbInventario.delete(parseInt(id));
+                await carregarDados();
+                atualizarDashboard();
+            } catch (error) {
+                console.error('Erro ao excluir item do inventário:', error);
+                alert('Erro ao excluir item do inventário. Verifique o console para mais detalhes.');
+            }
+        }
+
+        // Pesquisa
+        async function realizarPesquisa(e) {
+            e.preventDefault();
+            
+            const termo = document.getElementById('pesquisa-termo').value.toLowerCase();
+            const campo = document.getElementById('pesquisa-campo').value;
+            const unidadeId = document.getElementById('pesquisa-unidade').value;
+            
+            let resultados = inventario;
+            
+            // Filtrar por unidade, se selecionada
+            if (unidadeId) {
+                resultados = resultados.filter(item => item.UnidadeID === parseInt(unidadeId));
+            }
+            
+            // Filtrar por termo de pesquisa
+            if (termo) {
+                if (campo === 'tudo') {
+                    resultados = resultados.filter(item => {
+                        const equipamento = equipamentos.find(e => e.ID === item.EquipamentoID) || { Descricao: '' };
+                        const unidade = unidades.find(u => u.ID === item.UnidadeID) || { Nome: '' };
+                        
+                        return (
+                            (item.Serial && item.Serial.toLowerCase().includes(termo)) ||
+                            (item.Patrimonio && item.Patrimonio.toLowerCase().includes(termo)) ||
+                            (item.IP && item.IP.toLowerCase().includes(termo)) ||
+                            (item.Hostname && item.Hostname.toLowerCase().includes(termo)) ||
+                            (equipamento.Descricao && equipamento.Descricao.toLowerCase().includes(termo)) ||
+                            (unidade.Nome && unidade.Nome.toLowerCase().includes(termo)) ||
+                            (item.LocalInstalado && item.LocalInstalado.toLowerCase().includes(termo))
+                        );
+                    });
+                } else {
+                    resultados = resultados.filter(item => {
+                        if (campo === 'serial') return item.Serial && item.Serial.toLowerCase().includes(termo);
+                        if (campo === 'patrimonio') return item.Patrimonio && item.Patrimonio.toLowerCase().includes(termo);
+                        if (campo === 'ip') return item.IP && item.IP.toLowerCase().includes(termo);
+                        if (campo === 'hostname') return item.Hostname && item.Hostname.toLowerCase().includes(termo);
+                        return false;
+                    });
+                }
+            }
+            
+            // Exibir resultados
+            const tbody = document.getElementById('resultados-pesquisa');
+            tbody.innerHTML = '';
+            
+            if (resultados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum resultado encontrado.</td></tr>';
+                return;
+            }
+            
+            resultados.forEach(item => {
+                const equipamento = equipamentos.find(e => e.ID === item.EquipamentoID) || { Descricao: 'Desconhecido' };
+                const unidade = unidades.find(u => u.ID === item.UnidadeID) || { Nome: 'Desconhecida' };
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.ID}</td>
+                    <td>${formatarData(item.DataCadastro)}</td>
+                    <td>${equipamento.Descricao}</td>
+                    <td>${item.Serial || '-'}</td>
+                    <td>${item.Patrimonio || '-'}</td>
+                    <td>${item.IP || '-'}</td>
+                    <td>${item.Hostname || '-'}</td>
+                    <td>${unidade.Nome}${item.LocalInstalado ? ` (${item.LocalInstalado})` : ''}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Backup e restauração
+        async function fazerBackup() {
+            try {
+                const backupData = {
+                    unidades: await db.tbUnidades.toArray(),
+                    equipamentos: await db.tbEquipamentos.toArray(),
+                    inventario: await db.tbInventario.toArray(),
+                    dataBackup: new Date()
+                };
+                
+                const dataStr = JSON.stringify(backupData);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = `backup-inventario-${new Date().toISOString().split('T')[0]}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+                
+                alert('Backup realizado com sucesso!');
+            } catch (error) {
+                console.error('Erro ao fazer backup:', error);
+                alert('Erro ao fazer backup. Verifique o console para mais detalhes.');
+            }
+        }
+
+        async function restaurarBackup() {
+            const fileInput = document.getElementById('arquivo-backup');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Por favor, selecione um arquivo de backup.');
+                return;
+            }
+            
+            if (!confirm('ATENÇÃO: Esta operação irá substituir todos os dados atuais. Deseja continuar?')) {
+                return;
+            }
+            
+            try {
+                const fileText = await readFileAsText(file);
+                const backupData = JSON.parse(fileText);
+                
+                // Verificar se o arquivo tem a estrutura correta
+                if (!backupData.unidades || !backupData.equipamentos || !backupData.inventario) {
+                    alert('Arquivo de backup inválido.');
+                    return;
+                }
+                
+                // Limpar tabelas existentes
+                await db.tbUnidades.clear();
+                await db.tbEquipamentos.clear();
+                await db.tbInventario.clear();
+                
+                // Restaurar dados
+                await db.tbUnidades.bulkAdd(backupData.unidades);
+                await db.tbEquipamentos.bulkAdd(backupData.equipamentos);
+                await db.tbInventario.bulkAdd(backupData.inventario);
+                
+                // Recarregar dados e atualizar UI
+                await carregarDados();
+                atualizarDashboard();
+                
+                alert('Dados restaurados com sucesso!');
+                fileInput.value = '';
+            } catch (error) {
+                console.error('Erro ao restaurar backup:', error);
+                alert('Erro ao restaurar backup. Verifique o console para mais detalhes.');
+            }
+        }
+
+        function readFileAsText(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = e => reject(reader.error);
+                reader.readAsText(file);
+            });
+        }
+
+        // Relatórios
+        async function gerarRelatorioUnidade() {
+            const unidadeId = document.getElementById('select-unidade-relatorio').value;
+            const btnExportar = document.getElementById('btn-exportar-unidade');
+            
+            if (!unidadeId) {
+                document.getElementById('relatorio-unidade-body').innerHTML = '';
+                btnExportar.disabled = true;
+                return;
+            }
+            
+            btnExportar.disabled = false;
+            
+            try {
+                // Obter itens da unidade selecionada
+                const itensUnidade = inventario.filter(item => item.UnidadeID === parseInt(unidadeId));
+                
+                // Agrupar por equipamento
+                const equipamentosCount = {};
+                itensUnidade.forEach(item => {
+                    const equipamentoId = item.EquipamentoID;
+                    if (!equipamentosCount[equipamentoId]) {
+                        equipamentosCount[equipamentoId] = 0;
+                    }
+                    equipamentosCount[equipamentoId]++;
+                });
+                
+                // Gerar tabela
+                const tbody = document.getElementById('relatorio-unidade-body');
+                tbody.innerHTML = '';
+                
+                for (const equipamentoId in equipamentosCount) {
+                    const equipamento = equipamentos.find(e => e.ID === parseInt(equipamentoId)) || { Descricao: 'Desconhecido' };
+                    const count = equipamentosCount[equipamentoId];
+                    
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${equipamento.Descricao}</td>
+                        <td>${count}</td>
+                        <td>
+                            <button class="btn btn-sm btn-info detalhes-equipamento" data-equipamento="${equipamentoId}" data-unidade="${unidadeId}">
+                                Ver Detalhes
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+                
+                // Adicionar event listeners para os botões de detalhes
+                document.querySelectorAll('.detalhes-equipamento').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const equipamentoId = btn.dataset.equipamento;
+                        const unidadeId = btn.dataset.unidade;
+                        mostrarDetalhesEquipamento(parseInt(equipamentoId), parseInt(unidadeId));
+                    });
+                });
+            } catch (error) {
+                console.error('Erro ao gerar relatório por unidade:', error);
+            }
+        }
+
+        function mostrarDetalhesEquipamento(equipamentoId, unidadeId) {
+            const itens = inventario.filter(item => 
+                item.EquipamentoID === equipamentoId && item.UnidadeID === unidadeId
+            );
+            
+            const equipamento = equipamentos.find(e => e.ID === equipamentoId) || { Descricao: 'Desconhecido' };
+            const unidade = unidades.find(u => u.ID === unidadeId) || { Nome: 'Desconhecida' };
+            
+            let detalhes = `Detalhes do equipamento: ${equipamento.Descricao}\n`;
+            detalhes += `Unidade: ${unidade.Nome}\n\n`;
+            detalhes += `Total de itens: ${itens.length}\n\n`;
+            
+            itens.forEach((item, index) => {
+                detalhes += `Item ${index + 1}:\n`;
+                detalhes += `  Serial: ${item.Serial || 'N/A'}\n`;
+                detalhes += `  Patrimônio: ${item.Patrimonio || 'N/A'}\n`;
+                detalhes += `  IP: ${item.IP || 'N/A'}\n`;
+                detalhes += `  Hostname: ${item.Hostname || 'N/A'}\n`;
+                detalhes += `  Local: ${item.LocalInstalado || 'N/A'}\n`;
+                detalhes += `  Data de Cadastro: ${formatarData(item.DataCadastro)}\n\n`;
+            });
+            
+            alert(detalhes);
+        }
+
+        function exportarRelatorioGeral() {
+            let csv = 'Unidade,Total de Equipamentos\n';
+            
+            unidades.forEach(unidade => {
+                const count = inventario.filter(item => item.UnidadeID === unidade.ID).length;
+                csv += `"${unidade.Nome}",${count}\n`;
+            });
+            
+            downloadCSV(csv, 'relatorio-geral.csv');
+        }
+
+        function exportarRelatorioUnidade() {
+            const unidadeId = document.getElementById('select-unidade-relatorio').value;
+            if (!unidadeId) return;
+            
+            const unidade = unidades.find(u => u.ID === parseInt(unidadeId)) || { Nome: 'Desconhecida' };
+            const itensUnidade = inventario.filter(item => item.UnidadeID === parseInt(unidadeId));
+            
+            // Agrupar por equipamento
+            const equipamentosCount = {};
+            itensUnidade.forEach(item => {
+                const equipamentoId = item.EquipamentoID;
+                if (!equipamentosCount[equipamentoId]) {
+                    equipamentosCount[equipamentoId] = 0;
+                }
+                equipamentosCount[equipamentoId]++;
+            });
+            
+            let csv = `Relatório da Unidade: ${unidade.Nome}\n\n`;
+            csv += 'Equipamento,Quantidade\n';
+            
+            for (const equipamentoId in equipamentosCount) {
+                const equipamento = equipamentos.find(e => e.ID === parseInt(equipamentoId)) || { Descricao: 'Desconhecido' };
+                const count = equipamentosCount[equipamentoId];
+                csv += `"${equipamento.Descricao}",${count}\n`;
+            }
+            
+            downloadCSV(csv, `relatorio-${unidade.Nome}.csv`.replace(/\s+/g, '-'));
+        }
+
+        function downloadCSV(csv, filename) {
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Utilitários
+        function formatarData(data) {
+            return new Date(data).toLocaleDateString('pt-BR');
+        }
+    </script>
+</body>
+</html>

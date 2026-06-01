@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Inventário - Equipamentos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .sidebar {
+            min-height: calc(100vh - 56px);
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+        }
+        .nav-link {
+            color: #495057;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0d6efd;
+            background-color: #e9ecef;
+        }
+        .table-responsive {
+            min-height: 400px;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        .storage-info {
+            background: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        .db-path {
+            word-break: break-all;
+            background: #e9ecef;
+            padding: 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-hdd-stack me-2"></i>
+                Sistema de Inventário
+                <small class="ms-2 badge bg-light text-dark" id="status-banco">
+                    <span class="loading"></span> Conectando...
+                </small>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar py-3">
+                <nav class="nav flex-column">
+                    <a class="nav-link active" data-section="dashboard">
+                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                    </a>
+                    <a class="nav-link" data-section="unidades">
+                        <i class="bi bi-building me-2"></i> Unidades
+                    </a>
+                    <a class="nav-link" data-section="equipamentos">
+                        <i class="bi bi-pc-display me-2"></i> Equipamentos
+                    </a>
+                    <a class="nav-link" data-section="inventario">
+                        <i class="bi bi-clipboard-data me-2"></i> Inventário
+                    </a>
+                    <a class="nav-link" data-section="pesquisa">
+                        <i class="bi bi-search me-2"></i> Pesquisa
+                    </a>
+                    <a class="nav-link" data-section="backup">
+                        <i class="bi bi-cloud-arrow-down me-2"></i> Backup & Importação
+                    </a>
+                    <a class="nav-link" data-section="armazenamento">
+                        <i class="bi bi-hdd me-2"></i> Armazenamento
+                    </a>
+                    <hr>
+                    <div class="px-3 small text-muted">Relatórios</div>
+                    <a class="nav-link" data-section="relatorio-geral">
+                        <i class="bi bi-file-text me-2"></i> Relatório Geral
+                    </a>
+                    <a class="nav-link" data-section="relatorio-unidade">
+                        <i class="bi bi-file-text me-2"></i> Por Unidade
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Conteúdo Principal -->
+            <div class="col-md-9 col-lg-10 py-3">
+                
+                <!-- Seção de Armazenamento -->
+                <div id="armazenamento" class="section">
+                    <h2 class="mb-4">
+                        <i class="bi bi-hdd me-2"></i>Informações de Armazenamento
+                    </h2>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-database me-2"></i>
+                                        Localização do Banco
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <h6>Banco: <code>SistemaInventario</code></h6>
+                                    <p class="mb-3">O banco está armazenado localmente no seu navegador usando IndexedDB.</p>
+                                    
+                                    <div class="storage-info">
+                                        <strong>Possíveis localizações:</strong>
+                                        <div class="mt-2">
+                                            <h6>Chrome/Edge:</h6>
+                                            <div class="db-path" id="path-chrome">
+                                                C:\Users\[Usuário]\AppData\Local\Google\Chrome\User Data\Default\IndexedDB\
+                                            </div>
+                                        </div>
+                                        <div class="mt-2">
+                                            <h6>Firefox:</h6>
+                                            <div class="db-path">
+                                                C:\Users\[Usuário]\AppData\Roaming\Mozilla\Firefox\Profiles\[perfil]\storage\default\
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-tools me-2"></i>
+                                        Ferramentas do Desenvolvedor
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <p>Para inspecionar o banco de dados:</p>
+                                    <ol class="small">
+                                        <li>Pressione <kbd>F12</kbd></li>
+                                        <li>Vá para a aba <strong>"Application"</strong> (Chrome) ou <strong>"Storage"</strong> (Firefox)</li>
+                                        <li>No menu lateral: <strong>IndexedDB</strong> → <strong>SistemaInventario</strong></li>
+                                        <li>Você verá as tabelas: <code>tbUnidades</code>, <code>tbEquipamentos</code>, <code>tbInventario</code></li>
+                                    </ol>
+                                    
+                                    <button class="btn btn-outline-primary btn-sm mt-2" onclick="abrirFerramentasDev()">
+                                        <i class="bi bi-terminal me-1"></i> Abrir Ferramentas do Desenvolvedor
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header bg-warning text-dark">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-exclamation-triangle me-2"></i>
+                                        Importante - Dados Locais
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alert alert-warning">
+                                        <h6><i class="bi bi-info-circle me-2"></i>Os dados ficam armazenados apenas neste navegador!</h6>
+                                        <p class="mb-2">Se você:</p>
+                                        <ul>
+                                            <li>Limpar os dados do navegador</li>
+                                            <li>Usar modo anônimo/privativo</li>
+                                            <li>Trocar de navegador ou computador</li>
+                                            <li>Atualizar/reinstalar o navegador</li>
+                                        </ul>
+                                        <p class="mb-0"><strong>Os dados serão perdidos!</strong></p>
+                                    </div>
+
+                                    <div class="alert alert-info">
+                                        <h6><i class="bi bi-lightbulb me-2"></i>Recomendação</h6>
+                                        <p class="mb-0">Faça backup regularmente usando a seção "Backup & Importação" para evitar perda de dados.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informações Técnicas -->
+                    <div class="card mt-4">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-code-slash me-2"></i>
+                                Informações Técnicas
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h6>Database Info</h6>
+                                    <ul class="list-unstyled small">
+                                        <li><strong>Nome:</strong> <code>SistemaInventario</code></li>
+                                        <li><strong>Versão:</strong> <span id="tech-db-version">1</span></li>
+                                        <li><strong>Status:</strong> <span id="tech-db-status" class="badge bg-warning">Conectando...</span></li>
+                                        <li><strong>Tipo:</strong> IndexedDB</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Armazenamento</h6>
+                                    <ul class="list-unstyled small">
+                                        <li><strong>Unidades:</strong> <span id="tech-info-unidades">0</span> registros</li>
+                                        <li><strong>Equipamentos:</strong> <span id="tech-info-equipamentos">0</span> registros</li>
+                                        <li><strong>Inventário:</strong> <span id="tech-info-inventario">0</span> registros</li>
+                                        <li><strong>Total:</strong> <span id="tech-info-total">0</span> registros</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Navegador</h6>
+                                    <ul class="list-unstyled small">
+                                        <li><strong>User Agent:</strong> <span id="tech-user-agent"></span></li>
+                                        <li><strong>Suporte IndexedDB:</strong> <span id="tech-indexeddb-support" class="badge bg-success">Sim</span></li>
+                                        <li><strong>LocalStorage:</strong> <span id="tech-localstorage-size">0 KB</span></li>
+                                        <li><strong>SessionStorage:</strong> <span id="tech-sessionstorage-size">0 KB</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outras seções (Dashboard, Backup, etc.) -->
+                <div id="dashboard" class="section active">
+                    <!-- Conteúdo do dashboard -->
+                </div>
+
+                <div id="backup" class="section">
+                    <!-- Conteúdo do backup -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dexie@3.2.1/dist/dexie.min.js"></script>
+    <script>
+        let db;
+        let unidades = [];
+        let equipamentos = [];
+        let inventario = [];
+
+        // Estilo para loading
+        const style = document.createElement('style');
+        style.textContent = `
+            .loading {
+                display: inline-block;
+                width: 16px;
+                height: 16px;
+                border: 2px solid #f3f3f3;
+                border-top: 2px solid #3498db;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin-right: 5px;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Inicialização do banco
+        async function inicializarBanco() {
+            try {
+                console.log('📍 Iniciando conexão com IndexedDB...');
+                
+                db = new Dexie('SistemaInventario');
+                
+                db.version(1).stores({
+                    tbUnidades: '++id,SAP,Nome,Endereco',
+                    tbEquipamentos: '++id,Descricao',
+                    tbInventario: '++id,DataCadastro,EquipamentoID,Serial,Patrimonio,IP,Hostname,LocalInstalado,UnidadeID'
+                });
+
+                await db.open();
+                console.log('✅ Banco IndexedDB conectado!');
+                
+                atualizarStatusBanco('success', '✓ Conectado');
+                await carregarDados();
+                await atualizarInformacoesTecnicas();
+                
+            } catch (error) {
+                console.error('❌ Erro no IndexedDB:', error);
+                atualizarStatusBanco('danger', '✗ Erro');
+            }
+        }
+
+        async function carregarDados() {
+            try {
+                unidades = await db.tbUnidades.toArray();
+                equipamentos = await db.tbEquipamentos.toArray();
+                inventario = await db.tbInventario.toArray();
+                
+                atualizarInformacoesTecnicas();
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            }
+        }
+
+        function atualizarStatusBanco(tipo, texto) {
+            const elements = [
+                document.getElementById('status-banco'),
+                document.getElementById('tech-db-status')
+            ];
+            
+            elements.forEach(el => {
+                if (el) {
+                    el.innerHTML = texto;
+                    el.className = el.className.replace(/(^|\s)bg-\S+/g, '') + ` bg-${tipo}`;
+                }
+            });
+        }
+
+        async function atualizarInformacoesTecnicas() {
+            // Informações do banco
+            document.getElementById('tech-info-unidades').textContent = unidades.length;
+            document.getElementById('tech-info-equipamentos').textContent = equipamentos.length;
+            document.getElementById('tech-info-inventario').textContent = inventario.length;
+            document.getElementById('tech-info-total').textContent = unidades.length + equipamentos.length + inventario.length;
+
+            // Informações do navegador
+            document.getElementById('tech-user-agent').textContent = navigator.userAgent.substring(0, 50) + '...';
+            
+            // Suporte a IndexedDB
+            const indexedDBSupport = 'indexedDB' in window;
+            document.getElementById('tech-indexeddb-support').textContent = indexedDBSupport ? 'Sim' : 'Não';
+            document.getElementById('tech-indexeddb-support').className = `badge bg-${indexedDBSupport ? 'success' : 'danger'}`;
+
+            // Tamanho do localStorage
+            let localStorageSize = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    localStorageSize += localStorage[key].length;
+                }
+            }
+            document.getElementById('tech-localstorage-size').textContent = (localStorageSize / 1024).toFixed(2) + ' KB';
+
+            // Tamanho do sessionStorage
+            let sessionStorageSize = 0;
+            for (let key in sessionStorage) {
+                if (sessionStorage.hasOwnProperty(key)) {
+                    sessionStorageSize += sessionStorage[key].length;
+                }
+            }
+            document.getElementById('tech-sessionstorage-size').textContent = (sessionStorageSize / 1024).toFixed(2) + ' KB';
+        }
+
+        // Função para abrir ferramentas do desenvolvedor
+        function abrirFerramentasDev() {
+            // Isso não pode ser feito via JavaScript por questões de segurança
+            alert('Pressione F12 no seu teclado para abrir as Ferramentas do Desenvolvedor.\n\nDepois vá para a aba "Application" (Chrome) ou "Storage" (Firefox).');
+        }
+
+        // Navegação entre seções
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar banco
+            inicializarBanco();
+
+            // Configurar navegação
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById(this.getAttribute('data-section')).classList.add('active');
+                });
+            });
+
+            // Atualizar informações técnicas periodicamente
+            setInterval(atualizarInformacoesTecnicas, 5000);
+        });
+
+        // Função para ver detalhes do armazenamento
+        function verDetalhesArmazenamento() {
+            const detalhes = `
+=== DETALHES DO ARMAZENAMENTO ===
+
+Banco: SistemaInventario (IndexedDB)
+Localização: Armazenamento local do navegador
+
+Tabelas:
+- tbUnidades: ${unidades.length} registros
+- tbEquipamentos: ${equipamentos.length} registros  
+- tbInventario: ${inventario.length} registros
+
+Total: ${unidades.length + equipamentos.length + inventario.length} registros
+
+User Agent: ${navigator.userAgent}
+
+Para visualizar:
+1. Pressione F12
+2. Aba "Application" ou "Storage"
+3. IndexedDB → SistemaInventario
+            `;
+            console.log(detalhes);
+            alert('Detalhes exibidos no console (F12 → Console)');
+        }
+    </script>
+</body>
+</html>

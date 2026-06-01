@@ -1,0 +1,21 @@
+.sidebar {
+    min-height: calc(100vh - 56px);
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+}
+.nav-link {
+    color: #495057;
+}
+.nav-link:hover, .nav-link.active {
+    color: #0d6efd;
+    background-color: #e9ecef;
+}
+.table-responsive {
+    min-height: 400px;
+}
+.section {
+    display: none;
+}
+.section.active {
+    display: block;
+}

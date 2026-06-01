@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Inventário - Equipamentos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .sidebar {
+            min-height: calc(100vh - 56px);
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+        }
+        .nav-link {
+            color: #495057;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0d6efd;
+            background-color: #e9ecef;
+        }
+        .table-responsive {
+            min-height: 400px;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        .backup-section {
+            border-left: 4px solid #0d6efd;
+            padding-left: 15px;
+        }
+        .modal-backup {
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Modal de Detecção de Banco Vazio -->
+    <div class="modal fade" id="modalBancoVazio" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-backup">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        Sistema sem Dados
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Nenhum dado encontrado no banco local.</strong></p>
+                    <p>Isso pode acontecer por:</p>
+                    <ul>
+                        <li>Primeiro acesso ao sistema</li>
+                        <li>Limpeza do navegador</li>
+                        <li>Acesso em modo anônimo</li>
+                        <li>Mudança de domínio/porta</li>
+                    </ul>
+                    <p>O que você gostaria de fazer?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="btn-modal-dados-exemplo">
+                        <i class="bi bi-database-add me-2"></i> Carregar Dados de Exemplo
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btn-modal-importar">
+                        <i class="bi bi-cloud-upload me-2"></i> Importar Backup
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btn-modal-comecar-vazio">
+                        <i class="bi bi-play-circle me-2"></i> Começar Vazio
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-hdd-stack me-2"></i>
+                Sistema de Inventário
+                <small class="ms-2 badge bg-light text-dark" id="status-banco">✓ Conectado</small>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar py-3">
+                <nav class="nav flex-column">
+                    <a class="nav-link active" data-section="dashboard">
+                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                    </a>
+                    <a class="nav-link" data-section="unidades">
+                        <i class="bi bi-building me-2"></i> Unidades
+                    </a>
+                    <a class="nav-link" data-section="equipamentos">
+                        <i class="bi bi-pc-display me-2"></i> Equipamentos
+                    </a>
+                    <a class="nav-link" data-section="inventario">
+                        <i class="bi bi-clipboard-data me-2"></i> Inventário
+                    </a>
+                    <a class="nav-link" data-section="pesquisa">
+                        <i class="bi bi-search me-2"></i> Pesquisa
+                    </a>
+                    <a class="nav-link" data-section="backup">
+                        <i class="bi bi-cloud-arrow-down me-2"></i> Backup & Importação
+                    </a>
+                    <hr>
+                    <div class="px-3 small text-muted">Relatórios</div>
+                    <a class="nav-link" data-section="relatorio-geral">
+                        <i class="bi bi-file-text me-2"></i> Relatório Geral
+                    </a>
+                    <a class="nav-link" data-section="relatorio-unidade">
+                        <i class="bi bi-file-text me-2"></i> Por Unidade
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Conteúdo Principal -->
+            <div class="col-md-9 col-lg-10 py-3">
+                <!-- Dashboard -->
+                <div id="dashboard" class="section active">
+                    <!-- Conteúdo do dashboard -->
+                </div>
+
+                <!-- Backup & Importação -->
+                <div id="backup" class="section">
+                    <h2 class="mb-4">Backup e Importação de Dados</h2>
+                    
+                    <!-- Alertas de Prevenção -->
+                    <div class="alert alert-info">
+                        <h6><i class="bi bi-info-circle me-2"></i>Prevenção de Perda de Dados</h6>
+                        <p class="mb-2">Para evitar perda de dados:</p>
+                        <ul class="mb-0">
+                            <li>Faça backup regularmente</li>
+                            <li>Evite limpar dados do navegador</li>
+                            <li>Use sempre o mesmo endereço para acessar o sistema</li>
+                            <li>Exporte backup antes de atualizar o sistema</li>
+                        </ul>
+                    </div>
+
+                    <!-- Cards de Backup/Importação -->
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-success">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-cloud-download me-2"></i>
+                                        Exportar Backup
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">Faça o download de uma cópia de segurança de todos os dados.</p>
+                                    <div class="mb-3">
+                                        <label class="form-label">Último Backup:</label>
+                                        <div id="ultimo-backup-info" class="text-muted">Nenhum backup realizado</div>
+                                    </div>
+                                    <button id="btn-backup" class="btn btn-success w-100">
+                                        <i class="bi bi-download me-2"></i> Exportar Backup Agora
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-cloud-upload me-2"></i>
+                                        Importar Dados
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">Restaura dados a partir de um arquivo de backup.</p>
+                                    <div class="mb-3">
+                                        <label for="arquivo-backup" class="form-label">Selecionar arquivo (.json)</label>
+                                        <input class="form-control" type="file" id="arquivo-backup" accept=".json">
+                                    </div>
+                                    <button id="btn-restaurar" class="btn btn-primary w-100">
+                                        <i class="bi bi-upload me-2"></i> Importar Backup
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ações Rápidas -->
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <button id="btn-dados-exemplo" class="btn btn-outline-info w-100">
+                                        <i class="bi bi-database-add me-2"></i> Dados de Exemplo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <button id="btn-verificar-banco" class="btn btn-outline-secondary w-100">
+                                        <i class="bi bi-search me-2"></i> Verificar Banco
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <button id="btn-exportar-csv" class="btn btn-outline-success w-100">
+                                        <i class="bi bi-file-earmark-spreadsheet me-2"></i> Exportar CSV
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informações do Sistema -->
+                    <div class="card mt-4">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-server me-2"></i>
+                                Informações do Sistema
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h6>Banco de Dados</h6>
+                                    <ul class="list-unstyled small">
+                                        <li><strong>Nome:</strong> <span id="db-name">SistemaInventario</span></li>
+                                        <li><strong>Versão:</strong> <span id="db-version">1.0</span></li>
+                                        <li><strong>Status:</strong> <span id="db-status" class="badge bg-success">Conectado</span></li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Armazenamento</h6>
+                                    <ul class="list-unstyled small">
+                                        <li><strong>Unidades:</strong> <span id="info-unidades">0</span></li>
+                                        <li><strong>Equipamentos:</strong> <span id="info-equipamentos">0</span></li>
+                                        <li><strong>Inventário:</strong> <span id="info-inventario">0</span></li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Backup</h6>
+                                    <ul class="list-unstyled small">
+                                        <li><strong>Último:</strong> <span id="info-ultimo-backup">Nunca</span></li>
+                                        <li><strong>Total:</strong> <span id="info-total-backups">0</span></li>
+                                        <li><strong>Recomendação:</strong> <span class="badge bg-warning">Fazer Backup</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outras seções... -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast para notificações -->
+    <div class="toast-container">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Sistema de Inventário</strong>
+                <small>Agora</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toast-message"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dexie@3.2.1/dist/dexie.min.js"></script>
+    <script>
+        // Sistema de Gerenciamento de Banco
+        class GerenciadorBanco {
+            constructor() {
+                this.db = null;
+                this.ultimoBackup = localStorage.getItem('ultimoBackup');
+                this.totalBackups = parseInt(localStorage.getItem('totalBackups') || '0');
+                this.inicializarBanco();
+            }
+
+            async inicializarBanco() {
+                try {
+                    this.db = new Dexie('SistemaInventario');
+                    this.db.version(1).stores({
+                        tbUnidades: '++ID,SAP,Nome,Endereco',
+                        tbEquipamentos: '++ID,Descricao',
+                        tbInventario: '++ID,DataCadastro,EquipamentoID,Serial,Patrimonio,IP,Hostname,LocalInstalado,UnidadeID'
+                    });
+
+                    await this.db.open();
+                    console.log('Banco inicializado com sucesso');
+                    
+                    // Verificar se está vazio
+                    await this.verificarBancoVazio();
+                    
+                } catch (error) {
+                    console.error('Erro ao inicializar banco:', error);
+                    this.mostrarErroBanco();
+                }
+            }
+
+            async verificarBancoVazio() {
+                try {
+                    const [totalUnidades, totalEquipamentos, totalInventario] = await Promise.all([
+                        this.db.tbUnidades.count(),
+                        this.db.tbEquipamentos.count(),
+                        this.db.tbInventario.count()
+                    ]);
+
+                    const total = totalUnidades + totalEquipamentos + totalInventario;
+                    
+                    if (total === 0) {
+                        // Mostrar modal apenas se for realmente o primeiro acesso
+                        const jaMostrouModal = sessionStorage.getItem('modalMostrado');
+                        if (!jaMostrouModal) {
+                            this.mostrarModalBancoVazio();
+                            sessionStorage.setItem('modalMostrado', 'true');
+                        }
+                    }
+                    
+                    return total === 0;
+                } catch (error) {
+                    console.error('Erro ao verificar banco vazio:', error);
+                    return true;
+                }
+            }
+
+            mostrarModalBancoVazio() {
+                const modal = new bootstrap.Modal(document.getElementById('modalBancoVazio'));
+                modal.show();
+            }
+
+            mostrarErroBanco() {
+                document.getElementById('status-banco').textContent = '✗ Erro';
+                document.getElementById('status-banco').className = 'ms-2 badge bg-danger';
+                mostrarNotificacao('Erro ao conectar com o banco de dados', 'danger');
+            }
+
+            async fazerBackup() {
+                try {
+                    const backupData = {
+                        unidades: await this.db.tbUnidades.toArray(),
+                        equipamentos: await this.db.tbEquipamentos.toArray(),
+                        inventario: await this.db.tbInventario.toArray(),
+                        metadata: {
+                            dataBackup: new Date().toISOString(),
+                            versaoSistema: '1.0',
+                            totalRegistros: await this.obterTotalRegistros()
+                        }
+                    };
+
+                    const dataStr = JSON.stringify(backupData, null, 2);
+                    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                    
+                    const dataAtual = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
+                    const exportFileDefaultName = `backup-inventario-${dataAtual}.json`;
+                    
+                    const linkElement = document.createElement('a');
+                    linkElement.setAttribute('href', dataUri);
+                    linkElement.setAttribute('download', exportFileDefaultName);
+                    linkElement.click();
+
+                    // Salvar informações do backup
+                    this.registrarBackup();
+                    
+                    return true;
+                } catch (error) {
+                    console.error('Erro no backup:', error);
+                    return false;
+                }
+            }
+
+            async restaurarBackup(arquivo) {
+                try {
+                    const fileText = await this.lerArquivo(arquivo);
+                    const backupData = JSON.parse(fileText);
+
+                    if (!this.validarBackup(backupData)) {
+                        throw new Error('Arquivo de backup inválido');
+                    }
+
+                    // Fazer backup atual antes de restaurar
+                    const backupAtual = await this.fazerBackupRapido();
+                    
+                    try {
+                        await this.db.tbUnidades.clear();
+                        await this.db.tbEquipamentos.clear();
+                        await this.db.tbInventario.clear();
+
+                        await this.db.tbUnidades.bulkAdd(backupData.unidades);
+                        await this.db.tbEquipamentos.bulkAdd(backupData.equipamentos);
+                        await this.db.tbInventario.bulkAdd(backupData.inventario);
+
+                        this.registrarBackup('restauracao');
+                        return true;
+                    } catch (error) {
+                        // Tentar restaurar backup anterior em caso de erro
+                        console.error('Erro na restauração, tentando recuperar backup anterior:', error);
+                        await this.restaurarBackupData(backupAtual);
+                        throw error;
+                    }
+                } catch (error) {
+                    console.error('Erro na restauração:', error);
+                    return false;
+                }
+            }
+
+            async fazerBackupRapido() {
+                return {
+                    unidades: await this.db.tbUnidades.toArray(),
+                    equipamentos: await this.db.tbEquipamentos.toArray(),
+                    inventario: await this.db.tbInventario.toArray()
+                };
+            }
+
+            async restaurarBackupData(backupData) {
+                await this.db.tbUnidades.clear();
+                await this.db.tbEquipamentos.clear();
+                await this.db.tbInventario.clear();
+
+                await this.db.tbUnidades.bulkAdd(backupData.unidades);
+                await this.db.tbEquipamentos.bulkAdd(backupData.equipamentos);
+                await this.db.tbInventario.bulkAdd(backupData.inventario);
+            }
+
+            validarBackup(backupData) {
+                return backupData && 
+                       Array.isArray(backupData.unidades) &&
+                       Array.isArray(backupData.equipamentos) &&
+                       Array.isArray(backupData.inventario);
+            }
+
+            lerArquivo(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = e => resolve(e.target.result);
+                    reader.onerror = e => reject(reader.error);
+                    reader.readAsText(file);
+                });
+            }
+
+            registrarBackup(tipo = 'exportacao') {
+                const agora = new Date().toLocaleString('pt-BR');
+                localStorage.setItem('ultimoBackup', agora);
+                localStorage.setItem('totalBackups', (this.totalBackups + 1).toString());
+                
+                this.ultimoBackup = agora;
+                this.totalBackups++;
+                
+                this.atualizarInfoBackup();
+            }
+
+            atualizarInfoBackup() {
+                document.getElementById('ultimo-backup-info').textContent = 
+                    this.ultimoBackup || 'Nenhum backup realizado';
+                document.getElementById('info-ultimo-backup').textContent = 
+                    this.ultimoBackup || 'Nunca';
+                document.getElementById('info-total-backups').textContent = this.totalBackups;
+            }
+
+            async obterTotalRegistros() {
+                const [u, e, i] = await Promise.all([
+                    this.db.tbUnidades.count(),
+                    this.db.tbEquipamentos.count(),
+                    this.db.tbInventario.count()
+                ]);
+                return u + e + i;
+            }
+        }
+
+        // Inicialização do sistema
+        let gerenciadorBanco;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            gerenciadorBanco = new GerenciadorBanco();
+            await inicializarSistema();
+        });
+
+        async function inicializarSistema() {
+            // Configurar event listeners
+            document.getElementById('btn-backup').addEventListener('click', async () => {
+                const sucesso = await gerenciadorBanco.fazerBackup();
+                if (sucesso) {
+                    mostrarNotificacao('Backup realizado com sucesso!', 'success');
+                } else {
+                    mostrarNotificacao('Erro ao fazer backup', 'danger');
+                }
+            });
+
+            document.getElementById('btn-restaurar').addEventListener('click', async () => {
+                const fileInput = document.getElementById('arquivo-backup');
+                const file = fileInput.files[0];
+                
+                if (!file) {
+                    mostrarNotificacao('Selecione um arquivo de backup', 'warning');
+                    return;
+                }
+
+                const sucesso = await gerenciadorBanco.restaurarBackup(file);
+                if (sucesso) {
+                    mostrarNotificacao('Backup restaurado com sucesso!', 'success');
+                    fileInput.value = '';
+                    location.reload(); // Recarregar para atualizar dados
+                } else {
+                    mostrarNotificacao('Erro ao restaurar backup', 'danger');
+                }
+            });
+
+            // Configurar outros event listeners...
+        }
+
+        function mostrarNotificacao(mensagem, tipo = 'info') {
+            const toast = document.getElementById('liveToast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toast.className = `toast align-items-center text-bg-${tipo} border-0`;
+            toastMessage.textContent = mensagem;
+            
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        }
+    </script>
+</body>
+</html>

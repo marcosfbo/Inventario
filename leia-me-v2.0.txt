@@ -1,0 +1,46 @@
+As principais melhorias incluem:
+
+    Estrutura mais clara: Separei o código em arquivos distintos (HTML, CSS e JavaScript) para melhor organização e manutenção. Isso segue as melhores práticas de desenvolvimento web.
+
+    Gerenciamento de estado: O código original misturava a lógica de interface do usuário com a lógica de dados, tornando-o difícil de rastrear. A nova versão centraliza o gerenciamento de dados em uma classe InventoryDB, o que torna a lógica mais previsível.
+
+    Melhoria na experiência do usuário (UX): Adicionei feedback visual para operações como "salvar" e "excluir" e implementei a funcionalidade de redefinir o estado do formulário e dos modais.
+
+    Modernização do JavaScript: Usei async/await de forma mais consistente para lidar com operações assíncronas do IndexedDB (via Dexie.js), garantindo um código mais legível e robusto.
+
+
+
+
+index.html
+==========
+    Este arquivo contém a estrutura básica da página, com referências aos novos arquivos CSS e JavaScript.
+   
+
+style.css
+=========
+    Este arquivo contém as regras de estilo personalizadas. Ele foi extraído do <style> do seu código
+    original, mantendo a mesma funcionalidade.
+
+
+utils.js
+========
+    Este arquivo é uma boa prática para centralizar funções utilitárias que podem ser usadas em várias 
+    partes do seu projeto, como a formatação de data e o download de CSV.
+
+
+db.js
+=====
+
+    Neste arquivo, criei uma classe InventoryDB para encapsular toda a lógica de acesso ao banco de dados 
+    Dexie (IndexedDB). Isso melhora a organização e a reutilização do código, separando a lógica de dados 
+    da lógica da interface do usuário.
+
+
+app.js
+======
+    Este arquivo é o coração da aplicação, onde a lógica de manipulação da interface do usuário 
+    está centralizada. Ele importa as funcionalidades dos arquivos db.js e utils.js para manter 
+    o código limpo e organizado.
+
+
+By @MarcosFBO

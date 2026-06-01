@@ -1,0 +1,197 @@
+{
+  "unidades": [
+    {
+      "SAP": "G518",
+      "Nome": "BORIS DERBY",
+      "Endereco": "RUA DA BAIXA VERDE, 409 - DERBY - RECIFE - PERNAMBUCO",
+      "ID": 1
+    },
+    {
+      "SAP": "G519",
+      "Nome": "BORIS BOA VIAGEM",
+      "Endereco": "RUA RIBEIRO DE BRITO, 590 - BOA VIAGEM - RECIFE - PERNAMBUCO",
+      "ID": 2
+    },
+    {
+      "SAP": "G520",
+      "Nome": "BORIS PIEDADE",
+      "Endereco": "BORIS BERENSTEIN E CERPE PRIME - AV. BERNARDO VIEIRA DE MELO, 1330 - PIEDADE - JABOATÃO DOS GUARARAPES",
+      "ID": 3
+    },
+    {
+      "SAP": "G521",
+      "Nome": "BORIS CABO",
+      "Endereco": "AV. PRESIDENTE GETÚLIO VARGAS, 746 - CENTRO - CABO DE SANTO AGOSTINHO",
+      "ID": 4
+    },
+    {
+      "SAP": "G522",
+      "Nome": "BORIS OLINDA",
+      "Endereco": "R. CARMELITA MUNIZ DE ARAÚJO, 225 - CASA CAIADA - OLINDA",
+      "ID": 5
+    },
+    {
+      "SAP": "G523",
+      "Nome": "BORIS PAULISTA",
+      "Endereco": "RODOVIA 15, KM 16,5, 242 - CENTRO - PAULISTA",
+      "ID": 6
+    },
+    {
+      "SAP": "X068",
+      "Nome": "CERPE BORIS PAULISTA",
+      "Endereco": "RODOVIA 15 - KM 16,5, Nº242 - CENTRO, PAULISTA",
+      "ID": 7
+    }
+  ],
+  "equipamentos": [
+    {
+      "Descricao": "MINI PC OPTIPLEX 3050",
+      "ID": 1
+    },
+    {
+      "Descricao": "MINI PC OPTIPLEX 3060",
+      "ID": 2
+    },
+    {
+      "Descricao": "MINI PC OPTIPLEX 3070",
+      "ID": 3
+    },
+    {
+      "Descricao": "MINI PC OPTIPLEX 3080",
+      "ID": 4
+    },
+    {
+      "Descricao": "MINI PC POSITIVO C6400",
+      "ID": 5
+    },
+    {
+      "Descricao": "DESKTOP POSITIVO MASTER A6200",
+      "ID": 6
+    },
+    {
+      "Descricao": "NOTEBOOK POSITIVO N6440 R0HS",
+      "ID": 7
+    },
+    {
+      "Descricao": "MONITOR DELL E1916HF",
+      "ID": 8
+    },
+    {
+      "Descricao": "MONITOR DELL SE2216H",
+      "ID": 9
+    }
+  ],
+  "inventario": [
+    {
+      "EquipamentoID": 4,
+      "UnidadeID": 6,
+      "Serial": "4GJGB93",
+      "Patrimonio": "678397",
+      "IP": "192.168.37.250",
+      "Hostname": "PRINTSERV-PA",
+      "LocalInstalado": "SERVIDOR WTT - RACK01",
+      "DataCadastro": "2025-08-31T14:56:58.682Z",
+      "ID": 1
+    },
+    {
+      "EquipamentoID": 1,
+      "UnidadeID": 6,
+      "Serial": "C55QFP2",
+      "Patrimonio": "605919",
+      "IP": "10.119.66.38",
+      "Hostname": "BRBSDG523605919",
+      "LocalInstalado": "GUICHÊ 01",
+      "DataCadastro": "2025-08-31T15:27:12.449Z",
+      "ID": 2
+    },
+    {
+      "EquipamentoID": 8,
+      "UnidadeID": 6,
+      "Serial": "JH9WTD2",
+      "Patrimonio": "03607",
+      "IP": "N/A",
+      "Hostname": "N/A",
+      "LocalInstalado": "GUICH 01",
+      "DataCadastro": "2025-08-31T15:29:04.077Z",
+      "ID": 3
+    },
+    {
+      "EquipamentoID": 1,
+      "UnidadeID": 6,
+      "Serial": "C5SWFP2",
+      "Patrimonio": "03916",
+      "IP": "10.119.66.50",
+      "Hostname": "BRBSDG523003916",
+      "LocalInstalado": "GUICHÊ 02",
+      "DataCadastro": "2025-08-31T15:30:16.456Z",
+      "ID": 4
+    },
+    {
+      "EquipamentoID": 8,
+      "UnidadeID": 6,
+      "Serial": "N/A",
+      "Patrimonio": "605916",
+      "IP": "N/A",
+      "Hostname": "N/A",
+      "LocalInstalado": "GUICHEÊ 02",
+      "DataCadastro": "2025-08-31T15:31:13.010Z",
+      "ID": 5
+    },
+    {
+      "EquipamentoID": 1,
+      "UnidadeID": 6,
+      "Serial": "C59TFP2",
+      "Patrimonio": "XXX",
+      "IP": "X",
+      "Hostname": "X",
+      "LocalInstalado": "GUICHÊ 03",
+      "DataCadastro": "2025-08-31T15:32:45.067Z",
+      "ID": 6
+    },
+    {
+      "EquipamentoID": 9,
+      "UnidadeID": 7,
+      "Serial": "JKC30D3",
+      "Patrimonio": "514264",
+      "IP": "N;A",
+      "Hostname": "N~]",
+      "LocalInstalado": "GUICHÊ 03 ( 1º ANDAR)",
+      "DataCadastro": "2025-08-31T15:39:25.112Z",
+      "ID": 7
+    },
+    {
+      "EquipamentoID": 4,
+      "UnidadeID": 7,
+      "Serial": "99VTL6L3",
+      "Patrimonio": "551404",
+      "IP": "10.119.66.22",
+      "Hostname": "BRCPX068D551404",
+      "LocalInstalado": "GUICHÊ 03 (1º ANDAR)",
+      "DataCadastro": "2025-08-31T15:41:15.222Z",
+      "ID": 8
+    },
+    {
+      "EquipamentoID": 9,
+      "UnidadeID": 7,
+      "Serial": "N;A",
+      "Patrimonio": "514723",
+      "IP": "N]A",
+      "Hostname": "N]A",
+      "LocalInstalado": "GUICHÊ 04 (1º ANDAR)",
+      "DataCadastro": "2025-08-31T15:42:18.012Z",
+      "ID": 9
+    },
+    {
+      "EquipamentoID": 4,
+      "UnidadeID": 7,
+      "Serial": "2VTL6L3",
+      "Patrimonio": "551397",
+      "IP": "10.119.66.20",
+      "Hostname": "BRCPX068D551397",
+      "LocalInstalado": "GUICHÊ 04 ( 1º ANDAR)",
+      "DataCadastro": "2025-08-31T15:43:41.660Z",
+      "ID": 10
+    }
+  ],
+  "dataBackup": "2025-08-31T15:43:46.023Z"
+}
